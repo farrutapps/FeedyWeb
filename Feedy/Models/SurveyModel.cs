@@ -8,28 +8,49 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Feedy.Models
     {
-       
-        public class Survey
+       public class Event
+    {
+        // Primary Key
+        public int EventID { get; set; }
+        
+        [Required]
+        public string Place { get; set; }
+
+        
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? Date { get; set; }
+
+
+        /** TODO: validate File extension **/
+        [Required]
+        [NotMapped]
+        public HttpPostedFileBase SourceFile { get; set; }
+
+        //Foreign Key
+        [Required]
+        public int QuestionnaireID { get; set; }
+
+        //Navigational Properties
+        public virtual Questionnaire Questionnaire { get; set; }
+        public ICollection<CountData> NumericDatas { get; set; }
+        public ICollection<TextData> TextDatas { get; set; }
+
+
+    }
+
+    public class Questionnaire
         {
             //Primary key
-            public int ID { get; set; }
+            public int QuestionnaireID { get; set; }
 
-            
-            public string Name { get; set; }
-            public string Place { get; set; }
-            
-
-            [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-            public DateTime Date { get; set; }
-
-            
-            /** TODO: validate File extension **/
             [Required]
-            [NotMapped]
-            public HttpPostedFileBase SourceFile { get; set; }
+            public string Name { get; set; }
+
+            public string Comments { get; set; }
 
             //Navigation Properties
             public ICollection<Question> Questions { get; set; }
+            public ICollection<Event> Events { get; set; }
 
         }
 
@@ -38,15 +59,16 @@ namespace Feedy.Models
             //Constructor
             public Question(string QuestionText) { this.Text = QuestionText; }
             //Primary Key
-            public int ID { get; set; }
+            public int QuestionID { get; set; }
 
             public string Text { get; set; }
 
             //Foreign Key
-            public int SurveyID { get; set; }
+            public int QuestionaireID { get; set; }
+           
 
             //Navigation Property
-            public virtual Survey Survey { get; set; }
+            public virtual Questionnaire Questionnaire { get; set; }
             public ICollection<Answer> Answers { get; set; }
         }
 
@@ -54,10 +76,10 @@ namespace Feedy.Models
         {
             public Answer(string AnswerText) { this.Text = AnswerText; }
             //Primary Key
-            public int ID { get; set; }
+            public int AnswerID { get; set; }
 
             public string Text { get; set; }
-            public int Count { get; set; }
+            
 
             //Foreign Key
             public int QuestionId { get; set; }
@@ -65,20 +87,43 @@ namespace Feedy.Models
             //Navigation Property
             public virtual Question Question { get; set; }
             public ICollection<TextData> TextDataSet { get; set; }
+            public ICollection<CountData> CountDataSet { get; set; }
+
         }
+
+    public class CountData
+    {
+        public CountData(int Count) { this.Count = Count; }
+        //Primary Key
+        public int CountDataID { get; set; }
+
+        public int Count { get; set; }
+
+        //Foreign Key
+        public int AnswerID { get; set; }
+        public int EventID { get; set; }
+
+        //Navigation Property
+        public virtual Answer Answer { get; set; }
+        public virtual Event Event { get; set; }
+    }
 
         public class TextData
     {
         public TextData(string value) { Text = value; }
+
         //Primary Key
-        public int ID { get; set; }
+        public int TextDataID { get; set; }
+
         public string Text { get; set; }
 
         //Foreign Key
         public int AnswerID { get; set; }
+        public int EventID { get; set; }
 
         //Navigation Property
         public virtual Answer Answer { get; set; }
+        public virtual Event Event { get; set; }
 
     }
 
@@ -86,10 +131,12 @@ namespace Feedy.Models
 
         public class FeedyDbContext : DbContext
         {
-            public DbSet<Survey> Surveys { get; set; }
+            public DbSet<Event> Events { get; set; }
+            public DbSet<Questionnaire> Questionnaires { get; set; }
             public DbSet<Question> Questions { get; set;}
             public DbSet<Answer> Answers { get; set; }
             public DbSet<TextData> TextDataSet { get; set; }
+            public DbSet<CountData> CountDataSet { get; set; }
         }
     
 }
