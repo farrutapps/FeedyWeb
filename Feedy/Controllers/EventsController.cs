@@ -58,25 +58,27 @@ namespace Feedy.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    //// TODO FILL FILE CONTENT TO MODEL.
 
-                    
+                    ThisEvent.Questionnaire = db.Questionnaires
+                        .Include(t => t.Questions.Select(a => a.Answers.Select(d => d.CountDataSet)))
+                        .Include(t => t.Questions.Select(a => a.Answers.Select(d => d.TextDataSet)))
+                        .FirstOrDefault();
+
+
+
 
                     // If Questionnaire has no questions saved yet, take the ones provided.
-                    if (ThisEvent.Questionnaire.Questions != null)
+                    if (ThisEvent.Questionnaire.Questions.Any())
                     {
-                        try
-                        {
+                        // TRY BLAA
                             AppendDataToQuestionnaire(ThisEvent);
-                        }
-                        catch (Exception e)
-                        {
-                            //AAAARGH WRONG FILE
-                        }
+                        
+                       
                     }
                     else
                     {
                         ThisEvent.Questionnaire.Questions = ConvertFileToModel(ThisEvent);
+                        db.Entry(ThisEvent.Questionnaire).State = EntityState.Modified;
                     }
 
                     db.Events.Add(ThisEvent);
@@ -97,7 +99,7 @@ namespace Feedy.Controllers
 
         private void CheckDataForCompatibility(List<string[]> data, Questionnaire questionnaire)
         {
-            throw new NotImplementedException();
+            // TO BE IMPLEMENTED
         }
 
         // GET: Surveys/CreateQuestionnaire
@@ -204,21 +206,7 @@ namespace Feedy.Controllers
             ViewBag.QuestionnaireID = new SelectList(questionnairesQuery, "QuestionnaireID", "Name", selectedQuestionnaire);
         }
 
-        private string FileToString(HttpPostedFileBase file)
-        {
-            if (file == null)
-                throw new ArgumentNullException("File is null. Error.");
-            else
-            {
-                BinaryReader b = new BinaryReader(file.InputStream);
-                
-                byte[] binData = b.ReadBytes(checked((int)file.InputStream.Length));
-
-                string result = System.Text.Encoding.Unicode.GetString(binData);
-
-                return result;
-            }
-        }
+        
 
         private List<Question> ConvertFileToModel(Event myEvent)
         {
@@ -256,6 +244,7 @@ namespace Feedy.Controllers
                     {
                         Questions.Last<Question>().Answers.Add(new Answer(Element));
                         Questions.Last<Question>().Answers.Last<Answer>().TextDataSet = new List<TextData>();
+                        Questions.Last<Question>().Answers.Last<Answer>().CountDataSet = new List<CountData>();
                     }
 
                     else
@@ -278,7 +267,7 @@ namespace Feedy.Controllers
                             ++DataCounter;
                             TextDataElement = new TextData(Element);
                             TextDataElement.Event = myEvent;
-                            Questions.Last<Question>().Answers.Last<Answer>().TextDataSet.Add(TextDataElement);
+                            Questions.Last().Answers.Last().TextDataSet.Add(TextDataElement);
                         }
                     }
                 }
@@ -286,7 +275,7 @@ namespace Feedy.Controllers
                 //pass DataCounter to corresponding Answer.
                 CountDataElement = new CountData(DataCounter);
                 CountDataElement.Event = myEvent;
-                Questions.Last<Question>().Answers.Last<Answer>().CountDataSet.Add(CountDataElement);
+                Questions.Last().Answers.Last().CountDataSet.Add(CountDataElement);
             }
 
             return Questions;
@@ -319,11 +308,11 @@ namespace Feedy.Controllers
             for (int column = 0; column < Data[0].Length; ++column)
             {
                 DataCounter = 0;
-                
+
 
                 //find corresponding questions and answers in model.
 
-                RefAnswer=
+                RefAnswer =
                     from question in myEvent.Questionnaire.Questions
                     where question.Text == Data[0][column]
                     let answers = question.Answers
@@ -331,33 +320,63 @@ namespace Feedy.Controllers
                     where answer.Text == Data[1][column]
                     select answer;
 
-                for (int row = 2; row < Data.Count; ++row)
+
+                if (RefAnswer.Any())
                 {
-                    string Element = Data[row][column];
-                  
-                    // ignore if empty
-                    if (!string.IsNullOrWhiteSpace(Data[row][column]))
+                    for (int row = 2; row < Data.Count; ++row)
                     {
-                        //store if textanswer and count not null elements
-                        if(!Element.All(c => char.IsDigit(c)))
+                        string Element = Data[row][column];
+
+                        // ignore if empty
+                        if (!string.IsNullOrWhiteSpace(Data[row][column]))
                         {
-                            TextDataElement = new TextData(Data[row][column]);
-                            TextDataElement.Answer = RefAnswer.ElementAt(0);
-                                
+                            //store if textanswer and count not null elements
+                            if (!Element.All(c => char.IsDigit(c)))
+                            {
+                                TextDataElement = new TextData(Data[row][column]);
+                                TextDataElement.Event = myEvent;
+                                RefAnswer.FirstOrDefault().TextDataSet.Add(TextDataElement);
+
+                            }
+                            ++DataCounter;
                         }
-                        ++DataCounter;
-                    }   
+                    }
+                    CountDataElement = new CountData(DataCounter);
+                    CountDataElement.Event = myEvent;
+                    RefAnswer.FirstOrDefault().CountDataSet.Add(CountDataElement);
                 }
-                CountDataElement = new CountData(DataCounter);
-                CountDataElement.Event = myEvent;
-                RefAnswer.ElementAt(0).CountDataSet.Add(CountDataElement);
+
+                else
+                {
+                    // This is executed when no corresponding answer is found. For example names in »Mit welchem Teamer*in...«
+                    RefAnswer =
+                        from question in myEvent.Questionnaire.Questions
+                        where question.Text == Data[0][column]
+                        let answers = question.Answers
+                        from answer in answers
+                        select answer;
+
+                    foreach (var answer in RefAnswer)
+                    {
+                        CountDataElement = new CountData(0);
+                        CountDataElement.Event = myEvent;
+                        RefAnswer.FirstOrDefault().CountDataSet.Add(CountDataElement);
+                    }
+                }
             }
-           
         }
 
         private List<string[]> ParseFileContent(HttpPostedFileBase file)
         {
-            string FileContent = FileToString(file);
+
+            BinaryReader b = new BinaryReader(file.InputStream);
+
+            byte[] binData = b.ReadBytes(checked((int)file.InputStream.Length));
+
+            string result = System.Text.Encoding.Unicode.GetString(binData);
+
+            string FileContent = result;
+            
 
             MemoryStream Strm = new MemoryStream(Encoding.Unicode.GetBytes(FileContent));
             TextFieldParser Parser = new TextFieldParser(Strm);

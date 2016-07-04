@@ -16,6 +16,8 @@ namespace Feedy.Models
         [Required]
         public string Place { get; set; }
 
+        public int DeleteThisDummy { get; set; }
+
         
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? Date { get; set; }
@@ -56,7 +58,8 @@ namespace Feedy.Models
 
         public class Question
         {
-            //Constructor
+        //Constructors
+            public Question() { }
             public Question(string QuestionText) { this.Text = QuestionText; }
             //Primary Key
             public int QuestionID { get; set; }
@@ -64,7 +67,7 @@ namespace Feedy.Models
             public string Text { get; set; }
 
             //Foreign Key
-            public int QuestionaireID { get; set; }
+            public int QuestionnaireID { get; set; }
            
 
             //Navigation Property
@@ -74,6 +77,7 @@ namespace Feedy.Models
 
         public class Answer
         {
+            public Answer() { }
             public Answer(string AnswerText) { this.Text = AnswerText; }
             //Primary Key
             public int AnswerID { get; set; }
@@ -93,6 +97,7 @@ namespace Feedy.Models
 
     public class CountData
     {
+        public CountData() { }
         public CountData(int Count) { this.Count = Count; }
         //Primary Key
         public int CountDataID { get; set; }
@@ -108,8 +113,10 @@ namespace Feedy.Models
         public virtual Event Event { get; set; }
     }
 
+        
         public class TextData
     {
+        public TextData() { }
         public TextData(string value) { Text = value; }
 
         //Primary Key
@@ -137,6 +144,25 @@ namespace Feedy.Models
             public DbSet<Answer> Answers { get; set; }
             public DbSet<TextData> TextDataSet { get; set; }
             public DbSet<CountData> CountDataSet { get; set; }
+
+            protected override void OnModelCreating(DbModelBuilder modelBuilder)
+            {
+
+            modelBuilder.Entity<TextData>()
+                 .HasRequired(m => m.Answer)
+                 .WithMany(t => t.TextDataSet)
+                 .HasForeignKey(m => m.AnswerID)
+                 .WillCascadeOnDelete(false);
+
+
+            modelBuilder.Entity<CountData>()
+                  .HasRequired(m => m.Answer)
+                 .WithMany(t => t.CountDataSet)
+                 .HasForeignKey(m => m.AnswerID)
+                 .WillCascadeOnDelete(false);
+
         }
-    
+
+    }
+
 }
