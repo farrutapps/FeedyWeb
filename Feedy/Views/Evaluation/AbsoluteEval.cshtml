@@ -1,0 +1,19 @@
+﻿@model IEnumerable<Feedy.Models.AnswerEvaluation>
+
+
+<table class="table">
+
+
+    @foreach (var aEval in Model)
+    {
+        <tr>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.AbsoluteEvaluation)aEval).AnswerText)
+            </td>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.AbsoluteEvaluation)aEval).Value)
+            </td>
+        </tr>
+    }
+
+    </table>

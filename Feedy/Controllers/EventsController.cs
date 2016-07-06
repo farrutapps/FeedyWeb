@@ -212,6 +212,9 @@ namespace Feedy.Controllers
         {
             List<string[]> Data = ParseFileContent(myEvent.SourceFile);
 
+            //first two rows are question and answer texts.
+            myEvent.ParticipantsCount = Data.Count - 2;
+
             List<Question> Questions = new List<Question>();
             List<Answer> Answers = new List<Answer>();
 
@@ -286,6 +289,9 @@ namespace Feedy.Controllers
         {
 
             List<string[]> Data = ParseFileContent(myEvent.SourceFile);
+
+            //first two rows are question and answer texts.
+            myEvent.ParticipantsCount = Data.Count-2;
 
             try
             {
@@ -402,6 +408,10 @@ namespace Feedy.Controllers
     }
 }
 
-    
-        
+
+
+
+
+
+
 

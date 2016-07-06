@@ -16,7 +16,7 @@ namespace Feedy.Models
         [Required]
         public string Place { get; set; }
 
-        public int DeleteThisDummy { get; set; }
+        public int ParticipantsCount { get; set; }
 
         
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
@@ -65,6 +65,7 @@ namespace Feedy.Models
             public int QuestionID { get; set; }
 
             public string Text { get; set; }
+            public EvaluationMode EvalMode { get; set; }
 
             //Foreign Key
             public int QuestionnaireID { get; set; }
@@ -73,6 +74,9 @@ namespace Feedy.Models
             //Navigation Property
             public virtual Questionnaire Questionnaire { get; set; }
             public ICollection<Answer> Answers { get; set; }
+
+
+        
         }
 
         public class Answer

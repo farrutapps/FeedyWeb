@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Feedy.Models.AnswerEvaluation>
+
+
+<table class="table">
+
+
+    @foreach (var aEval in Model)
+    {
+        <tr>
+
+
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.MeanValueEvaluation)aEval).FirstAnswer)
+            </td>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.MeanValueEvaluation)aEval).EvaluationLabel)
+            </td>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.MeanValueEvaluation)aEval).LastAnswer)
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.MeanValueEvaluation)aEval).FirstAnswerValue)
+            </td>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.MeanValueEvaluation)aEval).Value)
+            </td>
+            <td>
+                @Html.LabelFor(itemModel => ((Feedy.Models.MeanValueEvaluation)aEval).LastAnswerValue)
+            </td>
+        </tr>
+    }
+
+</table>
