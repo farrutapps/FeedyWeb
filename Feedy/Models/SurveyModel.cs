@@ -149,7 +149,11 @@ namespace Feedy.Models
             public DbSet<TextData> TextDataSet { get; set; }
             public DbSet<CountData> CountDataSet { get; set; }
 
-            protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        // Temporarily Save for EvaluationController
+            public DbSet<SelectedQuestionsData> SelectQuestionsDatas { get; set; }
+            public DbSet<SelectedQuestion> SelectQuestions { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
             {
 
             modelBuilder.Entity<TextData>()

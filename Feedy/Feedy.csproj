@@ -283,6 +283,9 @@
     <Content Include="Views\Evaluation\PercentageEvaluation.cshtml" />
     <Content Include="Views\Evaluation\MeanValEvaluation.cshtml" />
     <Content Include="Views\Evaluation\TextEvaluation.cshtml" />
+    <Content Include="Views\Evaluation\Evaluation.cshtml" />
+    <Content Include="Views\Evaluation\SelectEvents.cshtml" />
+    <Content Include="Views\Evaluation\SelectQuestions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

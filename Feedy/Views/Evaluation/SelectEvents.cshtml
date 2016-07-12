@@ -1,0 +1,45 @@
+﻿@model Feedy.Models.SelectedQuestionsData
+
+@{
+    ViewBag.Title = "Select Events";
+}
+
+<h2>SelectQuestions</h2>
+
+
+
+<table class="table">
+    <tr>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Questions)
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var question in Model.Questions)
+    {
+        string selectedRow = "";
+
+        if (Model.SelectedQuestions.Select(sq => sq.QuestionID).Contains(question.QuestionID))
+        {
+            selectedRow = "success";
+        }
+        <tr class="@selectedRow">
+
+            <td>
+
+                @Html.ActionLink("Select", "SelectQuestions", new { questionnaireID = question.QuestionnaireID, ActionQuestionID = question.QuestionID, selectedQuestionsDataID = Model.SelectedQuestionsDataID })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => question.Text)
+            </td>
+
+
+        </tr>
+    }
+
+
+</table>
+@Html.ActionLink("Weiter", "SelectQuestions", "Evaluation", new { @class = "btn btn-success", })

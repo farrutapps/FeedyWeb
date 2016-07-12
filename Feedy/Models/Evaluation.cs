@@ -1,6 +1,7 @@
 ﻿using Feedy.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
@@ -8,13 +9,41 @@ using System.Web;
 namespace Feedy.Models
 {
 
+    public class SelectedQuestionsData
+    {
+        //Primary Key
+        public int SelectedQuestionsDataID { get; set; }
 
+        [NotMapped]
+        public List<Question> Questions { get; set; }
+
+        //Navigation Property
+        public ICollection<SelectedQuestion> SelectedQuestions { get; set; }
+    }
+
+    public class SelectedQuestion
+    {
+        //Primary Key
+        public int SelectedQuestionID { get; set; }
+
+        
+        public int QuestionID { get; set; }
+
+        //Forein Key
+        public int SelectedQuestionsDataID { get; set; }
+
+        //Nav Property
+        public SelectedQuestionsData SelectedQuestionsData { get; set; }
+    }
+
+    
 
 
 
     public class Query
     {
         private FeedyDbContext db = new FeedyDbContext();
+        public Query() { }
         public Query(List<Event> events, List<Question> questionSelection)
         {
             this.Events = events;

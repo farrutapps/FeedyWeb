@@ -1,51 +1,95 @@
-﻿
-@model IEnumerable<Feedy.Models.QuestionEvaluation>
+﻿@model Feedy.Models.Questionnaire
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "New Query";
 }
 
-<h2>Evaluation of Query</h2>
+<h2>Create</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label class="control-label col-md-2" for="QuestionnaireID">Fragebogen</label>
+        <div class="col-md-10">
+            @Html.DropDownList("QuestionnaireID", string.Empty)
+            @Html.ValidationMessageFor(model => model.QuestionnaireID)
 
-<table class="table">
- 
+        </div>
 
-    @foreach (var qEval in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => qEval.QuestionName)
-            </td>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Los!" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
 
-            <td>
-                @foreach(var ansEval in qEval.AnswerEvaluations)
-                {
-                   @switch (qEval.EvalMode)
-                       {
-                           case Feedy.Models.EvaluationMode.ABSOLUTE:
-                            @Html.Partial("AbsoluteEval", ansEval)
-                           break;
 
-                       case Feedy.Models.EvaluationMode.PERCENTAGE:
-                            @Html.Partial("PercentageEval", ansEval)
-                           break;
 
-                       case Feedy.Models.EvaluationMode.TEXT:
-                            @Html.Partial("TextEval", ansEval)
-                           break;
 
-                       case Feedy.Models.EvaluationMode.MEAN_VALUE:
-                            @Html.Partial("MeanValEval", ansEval)
-                           break;
 
-                       default:
-                            @Html.Partial("AbsoluteEval", ansEval)
-                           break;
-                        }
 
-                 }
-            </td>
-        </tr>
-    }
 
-</table>
+
+
+
+
+
+
+                @*<div class="col-md-10">
+                    @Html.ActionLink("Neuer Fragebogen", "CreateQuestionnaire")
+                </div>
+
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Place, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Place, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Place, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SourceFile, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <input type="file" name="SourceFile" />
+                        @Html.ValidationMessageFor(model => model.SourceFile, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="QuestionnaireID">Fragebogen</label>
+                    <div class="col-md-10">
+                        @Html.DropDownList("QuestionnaireID", string.Empty)
+                        @Html.ValidationMessageFor(model => model.QuestionnaireID)
+
+                    </div>
+                    <div class="col-md-10">
+                        @Html.ActionLink("Neuer Fragebogen", "CreateQuestionnaire")
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }*@
+
+        <div>
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }

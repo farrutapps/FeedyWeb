@@ -1,0 +1,52 @@
+﻿
+
+@model IEnumerable<Feedy.Models.QuestionEvaluation>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Evaluation of Query</h2>
+
+<table class="table">
+
+
+    @foreach (var qEval in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => qEval.QuestionName)
+            </td>
+
+            <td>
+                @foreach (var ansEval in qEval.AnswerEvaluations)
+                {
+                    switch (qEval.EvalMode)
+                    {
+                        case Feedy.Models.EvaluationMode.ABSOLUTE:
+                            @Html.Partial("AbsoluteEval", ansEval)
+                            break;
+
+                        case Feedy.Models.EvaluationMode.PERCENTAGE:
+                            @Html.Partial("PercentageEval", ansEval)
+                            break;
+
+                        case Feedy.Models.EvaluationMode.TEXT:
+                            @Html.Partial("TextEval", ansEval)
+                            break;
+
+                        case Feedy.Models.EvaluationMode.MEAN_VALUE:
+                            @Html.Partial("MeanValEval", ansEval)
+                            break;
+
+                        default:
+                            @Html.Partial("AbsoluteEval", ansEval)
+                            break;
+                    }
+
+                }
+            </td>
+        </tr>
+    }
+
+</table>
